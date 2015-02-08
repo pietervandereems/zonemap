@@ -13,5 +13,22 @@ require(['leaflet'], function (L) {
         maxZoom: 18
     });
 
+    L.Control.Locate = L.Control.extend({
+        options: {
+            position: 'topright',
+            placeholder: 'Locations'
+        },
+        initialize: {
+            L.Util.setOptions(this, options);
+        },
+        onAdd: {
+            var container.
+            container = L.DomUtil.create('div', 'locate-container');
+            this.select = L.DomUtil.create('select', 'select', container);
+            console.log('ss', this.select);
+        }
+    });
+
     zone.addTo(map);
+    new L.Control.Locate().addTo(map);
 });
