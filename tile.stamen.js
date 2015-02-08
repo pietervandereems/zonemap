@@ -8,7 +8,7 @@
     var SUBDOMAINS = ["a.", "b.", "c.", "d."],
         MAKE_PROVIDER = function (layer, type, minZoom, maxZoom) {
             return {
-                "url":          ["https://{S}tile.stamen.com/", layer, "/{Z}/{X}/{Y}.", type].join(""),
+                "url":          ["http://{S}tile.stamen.com/", layer, "/{Z}/{X}/{Y}.", type].join(""),
                 "type":         type,
                 "subdomains":   SUBDOMAINS.slice(),
                 "minZoom":      minZoom,
