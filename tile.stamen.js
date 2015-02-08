@@ -24,7 +24,7 @@
         odbl = [
             "toner",
             "toner-hybrid",
-            "toner-labels",
+//            "toner-labels",
             "toner-lines",
             "toner-background",
             "toner-lite"
