@@ -21,7 +21,7 @@ require(['stamen'], function (stamen) {
     'use strict';
     var MARKER, // MARKER contains the current marker on the map
         mapElm = document.getElementById('map'), // Dom Elements
-        map = L.map(mapElm).setView([53.2362, 6.5949], 11), // Leaflet Variables
+        map = L.map(mapElm).setView([12.971599, 77.594563], 11), // Leaflet Variables
         stamenTiles,
         updateMarker;
 
