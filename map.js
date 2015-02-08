@@ -18,11 +18,11 @@ require(['leaflet'], function (L) {
             position: 'topright',
             placeholder: 'Locations'
         },
-        initialize: {
+        initialize: function (options) {
             L.Util.setOptions(this, options);
         },
-        onAdd: {
-            var container.
+        onAdd: function (map) {
+            var container;
             container = L.DomUtil.create('div', 'locate-container');
             this.select = L.DomUtil.create('select', 'select', container);
             console.log('ss', this.select);
