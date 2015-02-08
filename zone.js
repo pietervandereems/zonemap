@@ -26,7 +26,7 @@ require(['stamen'], function (stamen) {
         updateMarker;
 
     // **** Helper functions ********
-    stamenTiles = new L.StamenTileLayer("toner");
+    stamenTiles = new L.StamenTileLayer("toner-background");
     map.addLayer(stamenTiles);
 
     // *** Internal Functions ****
