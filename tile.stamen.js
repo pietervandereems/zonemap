@@ -8,7 +8,7 @@
     var SUBDOMAINS = ["a.", "b.", "c.", "d."],
         MAKE_PROVIDER = function (layer, type, minZoom, maxZoom) {
             return {
-                "url":          ["http://{S}tile.stamen.com/", layer, "/{Z}/{X}/{Y}.", type].join(""),
+                "url":          ["https://{S}tile.stamen.com/", layer, "/{Z}/{X}/{Y}.", type].join(""),
                 "type":         type,
                 "subdomains":   SUBDOMAINS.slice(),
                 "minZoom":      minZoom,
@@ -131,4 +131,4 @@
         };
     }
 
-}(exports === undefined ? this : exports));
+}(typeof exports === "undefined" ? this : exports));
