@@ -22,10 +22,21 @@ require(['leaflet'], function (L) {
             L.Util.setOptions(this, options);
         },
         onAdd: function (map) {
-            var container;
+            var container,
+                list = '';
             container = L.DomUtil.create('div', 'locate-container');
             this.select = L.DomUtil.create('select', 'select', container);
-            console.log('ss', this.select);
+            list = '<option value="12.96967141582902,77.59339928627014">Sports</option>';
+            this.select.innerHTML = list;
+            this.goToLocation = function (ev) {
+                var coordinates;
+                coordinates = ev.target.options[ev.target.selectedIndex].value.split(',');
+                map.setView([coordinates[0], coordinates[1]], 16);
+            };
+            this.select.addEventListener('change', this.goToLocation);
+        },
+        onRemove: function () {
+            this.select.removeEventListener('change', this.goToLocation);
         }
     });
 
