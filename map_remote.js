@@ -7,7 +7,11 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         map = L.map(mapElm).setView([12.971599, 77.594563], 12), // Leaflet Variables
         zone,
         locate,
-        commandDb = new Pouchdb('commanddb');
+        updateMarker,
+        goToLocation,
+        marker,
+        commandDb = new Pouchdb('commanddb'),
+        listener;
 
     // ****************** Leaflet **********************
     zone = L.tileLayer('https://zone.mekton.nl/tiles/{z}/{x}/{y}.png', {
@@ -16,13 +20,36 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         maxZoom: 18
     });
 
+    updateMarker = function (latlng) {
+        if (marker) { // we have a previous marker
+            marker.setLatLng(latlng).update();
+        } else { // Create a new marker
+            marker = new L.Marker([latlng.lat, latlng.lng], {draggable: false});
+            marker.addTo(map);
+        }
+    };
+
+    goToLocation = function (ev) {
+        var coordinates;
+        if (ev._id) {
+            map.setView([ev.location.lat, ev.location.lng], ev.zoomlevel || 16);
+            if (ev.mark) {
+                updateMarker(L.latLng(ev.location.lat, ev.location.lng));
+            }
+        } else {
+            if (ev.target.options[ev.target.selectedIndex].value.indexOf(',') > -1) {
+                coordinates = ev.target.options[ev.target.selectedIndex].value.split(',');
+                map.setView([coordinates[0], coordinates[1]], 16);
+                updateMarker(L.latLng(coordinates[0], coordinates[1]));
+            }
+        }
+    };
+
     locate = L.control();
 
-    locate.onAdd = function (map) {
+    locate.onAdd = function () {
         var container,
-            list = '<option value="">Location</option>',
-            updateMarker,
-            marker;
+            list = '<option value="">Location</option>';
         container = L.DomUtil.create('div', 'locate-container');
         L.DomEvent.disableClickPropagation(container);
         this.select = L.DomUtil.create('select', 'select', container);
@@ -45,27 +72,11 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         list += '<option value="12.951363805094765,77.64690399169922">Detector Range Golf Course</option>';
         this.select.innerHTML = list;
 
-        updateMarker = function (latlng) {
-            if (marker) { // we have a previous marker
-                marker.setLatLng(latlng).update();
-            } else { // Create a new marker
-                marker = new L.Marker([latlng.lat, latlng.lng], {draggable: false});
-                marker.addTo(map);
-            }
-        };
-        this.goToLocation = function (ev) {
-            var coordinates;
-            if (ev.target.options[ev.target.selectedIndex].value.indexOf(',') > -1) {
-                coordinates = ev.target.options[ev.target.selectedIndex].value.split(',');
-                map.setView([coordinates[0], coordinates[1]], 16);
-                updateMarker(L.latLng(coordinates[0], coordinates[1]));
-            }
-        };
-        this.select.addEventListener('change', this.goToLocation);
+        this.select.addEventListener('change', goToLocation);
         return this.select;
     };
     locate.onRemove = function () {
-        this.select.removeEventListener('change', this.goToLocation);
+        this.select.removeEventListener('change', goToLocation);
         console.log('removed');
     };
 
@@ -77,14 +88,33 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     });
 
     // ****************** Control **********************
+    listener = {
+        start: function () {
+            if (listener.status !== 'stopped') {
+                return;
+            }
+            listener.status = 'started';
+            commandDb.changes({since: 'now', include_docs: true, live: true})
+                .on('change', function (change) {
+                    if (listener.status === 'running') {
+                        console.log('listing, change', change);
+                        if (change.doc && change.doc.location) {
+                            goToLocation(change.doc);
+                        }
+                    }
+                })
+                .on('uptodate', function () {
+                    listener.status = 'running';
+                    console.log('listening, uptodate', arguments);
+                });
+        },
+        status: 'stopped'
+    };
     Pouchdb.replicate('https://zone.mekton.nl/db/zone_control', 'commanddb', {live: true})
-        .on('uptodate', function () {
-            console.log('uptodate', arguments);
+        .on('uptodate', function () { // Should be deprecated in pouchdb, but not yet
+            listener.start();
         })
-        .on('error', function (err) {
-            console.error('error', err);
-        })
-        .on('complete', function () { // will also be called on a replicator.cancel()
-            console.log('complete', arguments);
+        .on('paused', function () { // should be used instead of uptodate, but seems not to be called yet
+            console.log('paused', arguments);
         });
 });
