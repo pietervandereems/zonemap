@@ -11,6 +11,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         goToLocation,
         marker,
         multiMarkers,
+        MARKERS,
         commandDb = new Pouchdb('commanddb'),
         interpretCommand,
         listener;
@@ -21,7 +22,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         minZoom: 12,
         maxZoom: 18
     });
-    multiMarkers = new (function () {
+    MARKERS = function () {
         var markers = [],
             update,
             clean;
@@ -42,7 +43,8 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
             update: update,
             clean: clean
         };
-    }());
+    };
+    multiMarkers = new MARKERS();
 
     updateMarker = function (latlng) {
         multiMarkers.clean();
