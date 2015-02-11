@@ -10,7 +10,9 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         updateMarker,
         goToLocation,
         marker,
+        multiMarkers,
         commandDb = new Pouchdb('commanddb'),
+        interpretCommand,
         listener;
 
     // ****************** Leaflet **********************
@@ -19,8 +21,31 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         minZoom: 12,
         maxZoom: 18
     });
+    multiMarkers = new (function () {
+        var markers = [],
+            update,
+            clean;
+        update = function (doc) {
+            doc.location.forEach(function (loc) {
+                var mark;
+                mark = new L.Marker([loc.lat, loc.lng], {draggable: false});
+                mark.addTo(map);
+                markers.push(mark);
+            });
+        };
+        clean = function () {
+            markers.forEach(function (mark) {
+                map.removeLayer(mark);
+            });
+        };
+        return {
+            update: update,
+            clean: clean
+        };
+    }());
 
     updateMarker = function (latlng) {
+        multiMarkers.clean();
         if (marker) { // we have a previous marker
             marker.setLatLng(latlng).update();
         } else { // Create a new marker
@@ -87,7 +112,21 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         console.log('location:', ev);
     });
 
+
     // ****************** Control **********************
+    interpretCommand = function (doc) {
+        if (!doc.command) {
+            return;
+        }
+        switch (doc.command) {
+        case 'move':
+            goToLocation(doc);
+            break;
+        case 'mark':
+            multiMarkers.update(doc);
+            break;
+        }
+    };
     listener = {
         start: function () {
             if (listener.status !== 'stopped') {
@@ -98,8 +137,8 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
                 .on('change', function (change) {
                     if (listener.status === 'running') {
                         console.log('listing, change', change);
-                        if (change.doc && change.doc.location) {
-                            goToLocation(change.doc);
+                        if (change.doc) {
+                            interpretCommand(change.doc);
                         }
                     }
                 })
