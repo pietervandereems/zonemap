@@ -9,9 +9,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         locate,
         updateMarker,
         sendLocation,
-        marker,
-        multiMarkers,
-        MARKERS,
+        markers = {},
         commandDb = new Pouchdb('commanddb'),
         interpretCommand,
         listener;
@@ -22,47 +20,21 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         minZoom: 12,
         maxZoom: 18
     });
-    MARKERS = function () {
-        var markers = [],
-            update,
-            clean;
-        update = function (doc) {
-            if (marker) { // remove the single marker if present
-                map.removeLayer(marker);
-                marker = false;
-            }
-            this.clean();
-            doc.location.forEach(function (loc) {
-                var mark;
-                mark = new L.Marker([loc.lat, loc.lng], {draggable: false});
-                mark.addTo(map);
-                markers.push(mark);
-            });
-        };
-        clean = function () {
-            markers.forEach(function (mark) {
-                map.removeLayer(mark);
-            });
-        };
-        return {
-            update: update,
-            clean: clean
-        };
-    };
-    multiMarkers = new MARKERS();
-
-    updateMarker = function (latlng) {
-        multiMarkers.clean(); // remove the multi markers if presetn
-        if (marker) { // we have a previous single marker, update it's position
-            marker.setLatLng(latlng).update();
-        } else { // Create a new single marker
-            marker = new L.Marker([latlng.lat, latlng.lng], {draggable: false});
-            marker.addTo(map);
+    updateMarker = function (ev) {
+        var target = ev.target,
+            coordinates;
+        if (target.checked) {
+            coordinates = target.value.split(',');
+            markers[target.value] = new L.Marker([coordinates[0], coordinates[1]], {dragable: false});
+            markers[target.value].addTo(map);
+        } else {
+            map.removeLayer(markers[target.value]);
+            delete markers[target.value];
         }
     };
 
     sendLocation = function (ev) {
-        console.log('sendLocation', ev);
+        console.log('sendLocation', markers);
     };
 
     locate = L.control();
@@ -111,6 +83,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
             return;
         }
         console.log('locate location', ev);
+        updateMarker(ev);
     });
 
 
