@@ -23,6 +23,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     updateMarker = function (ev) {
         var target = ev.target,
             coordinates;
+        console.log('updateMarker', target);
         if (target.checked) {
             coordinates = target.value.split(',');
             markers[target.value] = new L.Marker([coordinates[0], coordinates[1]], {dragable: false});
@@ -82,8 +83,9 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
             sendLocation(ev);
             return;
         }
-        console.log('locate location', ev);
-        updateMarker(ev);
+        if (ev.target.value.indexOf(',') > -1) {
+            updateMarker(ev);
+        }
     });
 
 
