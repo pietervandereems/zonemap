@@ -4,21 +4,31 @@
 require(['leaflet'], function (L) {
     'use strict';
     var mapElm = document.getElementById('map'), // Dom Elements
-        map = L.map(mapElm).setView([12.971599, 77.594563], 12), // Leaflet Variables
+        map, // Leaflet Variables
         zone,
+        osm,
         locate,
-        updateMarker,
+        markers = {},
+        updateMarker, // Internal functions
         cleanMarkers,
-        sendLocation,
-        markers = {};
+        sendLocation;
 
     // ****************** Leaflet **********************
     zone = L.tileLayer('https://zone.mekton.nl/tiles/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        minZoom: 12,
+        minZoom: 10,
+        maxZoom: 18
+    });
+    osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        minZoom: 8,
         maxZoom: 18
     });
 
+    map = L.map(mapElm, {layers: [zone, osm]}).setView([12.971599, 77.594563], 12);
+    L.control.layers({'Zone': zone, 'Osm': osm}).addTo(map);
+
+    // ****************** Markers **********************
     updateMarker = function (coor, add) {
         var coordinates = [],
             coorStr;
