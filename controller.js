@@ -71,26 +71,26 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         var list = '';
         this.container = L.DomUtil.create('div', 'locate-container');
         L.DomEvent.disableClickPropagation(this.container);
-        list += '<label><input type="checkbox" value="12.96967141582902,77.59339928627014" />Sports</label><br/>';
-        list += '<label><input type="checkbox" value="12.9492,77.5860" />Botanical Gardens</label><br/>';
-        list += '<label><input type="checkbox" value="12.96219588361988,77.57351875305176" />Fastolfe Hospital</label><br/>';
-        list += '<label><input type="checkbox" value="13.080230711990428,77.57497787475586" />Agricultural University</label><br/>';
-        list += '<label><input type="checkbox" value="13.135695543101336,77.60300159454346" />Airforce</label><br/>';
-        list += '<label><input type="checkbox" value="12.938377236944088,77.59669303894043" />Mental Sciences</label><br/>';
-        list += '<label><input type="checkbox" value="12.94383544221124,77.59581327438354" />Dental Sciences</label><br/>';
-        list += '<label><input type="checkbox" value="12.987601322043336,77.62922286987305" />Army</label><br/>';
-        list += '<label><input type="checkbox" value="12.826363620592424,77.5411605834961" />Von Braun Park</label><br/>';
-        list += '<label><input type="checkbox" value="12.88510641838721,77.52644062042236" />Dyson Memorial Park</label><br/>';
-        list += '<label><input type="checkbox" value="12.9977627702671,77.63958692550659" />Asimov R&D Grounds</label><br/>';
-        list += '<label><input type="checkbox" value="13.071322,77.580199" />Geology Department</label><br/>';
-        list += '<label><input type="checkbox" value="12.945651,77.508995" />Geology Department</label><br/>';
-        list += '<label><input type="checkbox" value="12.998599084931548,77.59188652038574" />Palace</label><br/>';
-        list += '<label><input type="checkbox" value="13.021868409794724,77.56609439849854" />Institute of Science</label><br/>';
-        list += '<label><input type="checkbox" value="12.951363805094765,77.64690399169922" />Detector Range Golf Course</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.96967141582902,77.59339928627014" />Sports</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.9492,77.5860" />Botanical Gardens</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.96219588361988,77.57351875305176" />Fastolfe Hospital</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="13.080230711990428,77.57497787475586" />Agricultural University</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="13.135695543101336,77.60300159454346" />Airforce</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.938377236944088,77.59669303894043" />Mental Sciences</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.94383544221124,77.59581327438354" />Dental Sciences</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.987601322043336,77.62922286987305" />Army</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.826363620592424,77.5411605834961" />Von Braun Park</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.88510641838721,77.52644062042236" />Dyson Memorial Park</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.9977627702671,77.63958692550659" />Asimov R&D Grounds</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="13.071322,77.580199" />Geology Department</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.945651,77.508995" />Geology Department</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.998599084931548,77.59188652038574" />Palace</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="13.021868409794724,77.56609439849854" />Institute of Science</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.951363805094765,77.64690399169922" />Detector Range Golf Course</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="mark" />Mark</label><br/>';
+        list += '<button type="button">Send</button>';
         this.container.innerHTML = list;
-        this.button = L.DomUtil.create('button', 'locate-button');
 
-        this.button.addEventListener('click', sendLocation);
         return this.container;
     };
     locate.onRemove = function () {
@@ -103,6 +103,14 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
 
     map.addEventListener('click', function (ev) {
         console.log('location:', ev);
+    });
+
+    locate.container.addEventListener('click', function (ev) {
+        if (ev.target.tagName.toLowerCase() === 'button') {
+            sendLocation(ev);
+            return;
+        }
+        console.log('locate location', ev);
     });
 
 
