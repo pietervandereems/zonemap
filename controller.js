@@ -43,12 +43,14 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     };
 
     cleanMarkers = function () {
+        var inputs;
         Object.keys(markers).forEach(function (item) {
             map.removeLayer(markers[item]);
             delete markers[item];
         });
-        locate.container.querySelectorAll('input').forEach(function (element) {
-            element.checked = false;
+        inputs = locate.container.querySelectorAll('input');
+        Object.keys(inputs).forEach(function (element) {
+            inputs[element].checked = false;
         });
     };
 
@@ -109,7 +111,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
             }
             return;
         }
-        if (ev.target.value.indexOf(',') > -1) {
+        if (ev.target.value && ev.target.value.indexOf(',') > -1) {
             updateMarker(ev.target.value, ev.target.checked);
         }
     });
