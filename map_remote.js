@@ -27,6 +27,9 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
             update,
             clean;
         update = function (doc) {
+            if (marker) { // remove the single marker if present
+                map.removeLayer(marker);
+            }
             doc.location.forEach(function (loc) {
                 var mark;
                 mark = new L.Marker([loc.lat, loc.lng], {draggable: false});
@@ -47,10 +50,10 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     multiMarkers = new MARKERS();
 
     updateMarker = function (latlng) {
-        multiMarkers.clean();
-        if (marker) { // we have a previous marker
+        multiMarkers.clean(); // remove the multi markers if presetn
+        if (marker) { // we have a previous single marker, update it's position
             marker.setLatLng(latlng).update();
-        } else { // Create a new marker
+        } else { // Create a new single marker
             marker = new L.Marker([latlng.lat, latlng.lng], {draggable: false});
             marker.addTo(map);
         }
