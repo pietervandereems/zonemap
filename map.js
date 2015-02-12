@@ -29,6 +29,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         update = function (doc) {
             if (marker) { // remove the single marker if present
                 map.removeLayer(marker);
+                marker = false;
             }
             this.clean();
             doc.location.forEach(function (loc) {
