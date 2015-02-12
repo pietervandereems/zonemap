@@ -23,7 +23,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     });
 
     updateMarker = function (coor, add) {
-        var coordinates,
+        var coordinates = [],
             coorStr;
         if (typeof coor === 'object') {
             coordinates[0] = coor.lat;
@@ -82,8 +82,8 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
 
         return this.container;
     };
+
     locate.onRemove = function () {
-        this.select.removeEventListener('click', sendLocation);
         console.log('removed');
     };
 
