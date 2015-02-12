@@ -47,6 +47,9 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
             map.removeLayer(markers[item]);
             delete markers[item];
         });
+        locate.container.querySelectorAll('input').forEach(function (element) {
+            element.checked = false;
+        });
     };
 
     sendLocation = function (ev) {
