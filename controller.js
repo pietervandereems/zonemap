@@ -23,10 +23,8 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     });
 
     updateMarker = function (coor, add) {
-        var target = ev.target,
-            coordinates,
+        var coordinates,
             coorStr;
-        console.log('updateMarker', target);
         if (typeof coor === 'object') {
             coordinates[0] = coor.lat;
             coordinates[1] = coor.lng;
@@ -99,10 +97,10 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     locate.container.addEventListener('click', function (ev) {
         if (ev.target.tagName.toLowerCase() === 'button') {
             switch (ev.target.dataset.command) {
-            case: 'send':
+            case 'send':
                 sendLocation(ev);
                 break;
-            case: 'clean':
+            case 'clean':
                 cleanMarkers();
                 break;
             }
