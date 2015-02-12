@@ -8,6 +8,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         zone,
         locate,
         updateMarker,
+        cleanMarkers,
         sendLocation,
         markers = {},
         commandDb = new Pouchdb('commanddb'),
@@ -20,18 +21,34 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         minZoom: 12,
         maxZoom: 18
     });
-    updateMarker = function (ev) {
+
+    updateMarker = function (coor, add) {
         var target = ev.target,
-            coordinates;
+            coordinates,
+            coorStr;
         console.log('updateMarker', target);
-        if (target.checked) {
-            coordinates = target.value.split(',');
-            markers[target.value] = new L.Marker([coordinates[0], coordinates[1]], {dragable: false});
-            markers[target.value].addTo(map);
+        if (typeof coor === 'object') {
+            coordinates[0] = coor.lat;
+            coordinates[1] = coor.lng;
+            coorStr = coor.lat + ',' + coor.lng;
         } else {
-            map.removeLayer(markers[target.value]);
-            delete markers[target.value];
+            coordinates = coor.split(',');
+            coorStr = coor;
         }
+        if (add) {
+            markers[coorStr] = new L.Marker([coordinates[0], coordinates[1]], {dragable: true});
+            markers[coorStr].addTo(map);
+        } else {
+            map.removeLayer(markers[coorStr]);
+            delete markers[coorStr];
+        }
+    };
+
+    cleanMarkers = function () {
+        Object.keys(markers).forEach(function (item) {
+            map.removeLayer(markers[item]);
+            delete markers[item];
+        });
     };
 
     sendLocation = function (ev) {
@@ -61,7 +78,8 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         list += '<label><input type="checkbox" name="coordinates" value="13.021868409794724,77.56609439849854" />Institute of Science</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.951363805094765,77.64690399169922" />Detector Range Golf Course</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="mark" />Mark</label><br/>';
-        list += '<button type="button">Send</button>';
+        list += '<button type="button" data-command="clean">Clean</button>';
+        list += '<button type="button" data-command="send">Send</button>';
         this.container.innerHTML = list;
 
         return this.container;
@@ -75,19 +93,25 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     locate.addTo(map);
 
     map.addEventListener('click', function (ev) {
-        console.log('location:', ev);
+        updateMarker(ev.latlng, true);
     });
 
     locate.container.addEventListener('click', function (ev) {
         if (ev.target.tagName.toLowerCase() === 'button') {
-            sendLocation(ev);
+            switch (ev.target.dataset.command) {
+            case: 'send':
+                sendLocation(ev);
+                break;
+            case: 'clean':
+                cleanMarkers();
+                break;
+            }
             return;
         }
         if (ev.target.value.indexOf(',') > -1) {
-            updateMarker(ev);
+            updateMarker(ev.target.value, ev.target.checked);
         }
     });
-
 
     // ****************** Control **********************
 //    interpretCommand = function (doc) {
