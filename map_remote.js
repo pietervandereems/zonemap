@@ -30,6 +30,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
             if (marker) { // remove the single marker if present
                 map.removeLayer(marker);
             }
+            this.clean();
             doc.location.forEach(function (loc) {
                 var mark;
                 mark = new L.Marker([loc.lat, loc.lng], {draggable: false});
