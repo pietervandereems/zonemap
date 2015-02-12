@@ -1,27 +1,86 @@
 /*jslint browser:true, nomen:true*/
 /*globals require*/
 
-require(['leaflet'], function (L) {
+require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
     'use strict';
     var mapElm = document.getElementById('map'), // Dom Elements
         map = L.map(mapElm).setView([12.971599, 77.594563], 12), // Leaflet Variables
         zone,
         locate,
-        updateMarker;
+        updateMarker,
+        goToLocation,
+        marker,
+        multiMarkers,
+        MARKERS,
+        commandDb = new Pouchdb('commanddb'),
+        interpretCommand,
+        listener;
 
+    // ****************** Leaflet **********************
     zone = L.tileLayer('https://zone.mekton.nl/tiles/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         minZoom: 12,
         maxZoom: 18
     });
+    MARKERS = function () {
+        var markers = [],
+            update,
+            clean;
+        update = function (doc) {
+            if (marker) { // remove the single marker if present
+                map.removeLayer(marker);
+            }
+            this.clean();
+            doc.location.forEach(function (loc) {
+                var mark;
+                mark = new L.Marker([loc.lat, loc.lng], {draggable: false});
+                mark.addTo(map);
+                markers.push(mark);
+            });
+        };
+        clean = function () {
+            markers.forEach(function (mark) {
+                map.removeLayer(mark);
+            });
+        };
+        return {
+            update: update,
+            clean: clean
+        };
+    };
+    multiMarkers = new MARKERS();
+
+    updateMarker = function (latlng) {
+        multiMarkers.clean(); // remove the multi markers if presetn
+        if (marker) { // we have a previous single marker, update it's position
+            marker.setLatLng(latlng).update();
+        } else { // Create a new single marker
+            marker = new L.Marker([latlng.lat, latlng.lng], {draggable: false});
+            marker.addTo(map);
+        }
+    };
+
+    goToLocation = function (ev) {
+        var coordinates;
+        if (ev._id) {
+            map.setView([ev.location.lat, ev.location.lng], ev.zoomlevel || 16);
+            if (ev.mark) {
+                updateMarker(L.latLng(ev.location.lat, ev.location.lng));
+            }
+        } else {
+            if (ev.target.options[ev.target.selectedIndex].value.indexOf(',') > -1) {
+                coordinates = ev.target.options[ev.target.selectedIndex].value.split(',');
+                map.setView([coordinates[0], coordinates[1]], 16);
+                updateMarker(L.latLng(coordinates[0], coordinates[1]));
+            }
+        }
+    };
 
     locate = L.control();
 
-    locate.onAdd = function (map) {
+    locate.onAdd = function () {
         var container,
-            list = '<option value="">Location</option>',
-            updateMarker,
-            marker;
+            list = '<option value="">Location</option>';
         container = L.DomUtil.create('div', 'locate-container');
         L.DomEvent.disableClickPropagation(container);
         this.select = L.DomUtil.create('select', 'select', container);
@@ -44,27 +103,11 @@ require(['leaflet'], function (L) {
         list += '<option value="12.951363805094765,77.64690399169922">Detector Range Golf Course</option>';
         this.select.innerHTML = list;
 
-        updateMarker = function (latlng) {
-            if (marker) { // we have a previous marker
-                marker.setLatLng(latlng).update();
-            } else { // Create a new marker
-                marker = new L.Marker([latlng.lat, latlng.lng], {draggable: false});
-                marker.addTo(map);
-            }
-        };
-        this.goToLocation = function (ev) {
-            var coordinates;
-            if (ev.target.options[ev.target.selectedIndex].value.indexOf(',') > -1) {
-                coordinates = ev.target.options[ev.target.selectedIndex].value.split(',');
-                map.setView([coordinates[0], coordinates[1]], 16);
-                updateMarker(L.latLng(coordinates[0], coordinates[1]));
-            }
-        };
-        this.select.addEventListener('change', this.goToLocation);
+        this.select.addEventListener('change', goToLocation);
         return this.select;
     };
     locate.onRemove = function () {
-        this.select.removeEventListener('change', this.goToLocation);
+        this.select.removeEventListener('change', goToLocation);
         console.log('removed');
     };
 
@@ -74,4 +117,49 @@ require(['leaflet'], function (L) {
     map.addEventListener('click', function (ev) {
         console.log('location:', ev);
     });
+
+
+    // ****************** Control **********************
+    interpretCommand = function (doc) {
+        if (!doc.command) {
+            return;
+        }
+        switch (doc.command) {
+        case 'move':
+            goToLocation(doc);
+            break;
+        case 'mark':
+            multiMarkers.update(doc);
+            break;
+        }
+    };
+    listener = {
+        start: function () {
+            if (listener.status !== 'stopped') {
+                return;
+            }
+            listener.status = 'started';
+            commandDb.changes({since: 'now', include_docs: true, live: true})
+                .on('change', function (change) {
+                    if (listener.status === 'running') {
+                        console.log('listing, change', change);
+                        if (change.doc) {
+                            interpretCommand(change.doc);
+                        }
+                    }
+                })
+                .on('uptodate', function () {
+                    listener.status = 'running';
+                    console.log('listening, uptodate', arguments);
+                });
+        },
+        status: 'stopped'
+    };
+    Pouchdb.replicate('https://zone.mekton.nl/db/zone_control', 'commanddb', {live: true})
+        .on('uptodate', function () { // Should be deprecated in pouchdb, but not yet
+            listener.start();
+        })
+        .on('paused', function () { // should be used instead of uptodate, but seems not to be called yet
+            console.log('paused', arguments);
+        });
 });
