@@ -19,7 +19,7 @@ require(['leaflet'], function (L) {
         minZoom: 10,
         maxZoom: 18
     });
-    osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         minZoom: 8,
         maxZoom: 18
