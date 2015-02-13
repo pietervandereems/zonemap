@@ -14,7 +14,8 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
         MARKERS,
         commandDb = new Pouchdb('commanddb'),
         interpretCommand,
-        listener;
+        listener,
+        LISTENER;
 
     // ****************** Leaflet **********************
     zone = L.tileLayer('https://zone.mekton.nl/tiles/{z}/{x}/{y}.png', {
@@ -134,15 +135,18 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
             break;
         }
     };
-    listener = {
-        start: function () {
-            if (listener.status !== 'stopped') {
+    LISTENER = function () {
+        var status = 'stopped',
+            start;
+
+        start = function () {
+            if (status !== 'stopped') {
                 return;
             }
-            listener.status = 'started';
+            status = 'started';
             commandDb.changes({since: 'now', include_docs: true, live: true})
                 .on('change', function (change) {
-                    if (listener.status === 'running') {
+                    if (status === 'running') {
                         console.log('listing, change', change);
                         if (change.doc) {
                             interpretCommand(change.doc);
@@ -150,17 +154,21 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
                     }
                 })
                 .on('uptodate', function () {
-                    listener.status = 'running';
+                    status = 'running';
                     console.log('listening, uptodate', arguments);
                 });
-        },
-        status: 'stopped'
+        };
+        return {
+            start: start
+        }
     };
+    listener = new LISTENER();
+
     Pouchdb.replicate('https://zone.mekton.nl/db/zone_control', 'commanddb', {live: true, retry: true})
-        .on('uptodate', function () { // Should be deprecated in pouchdb, but not yet
+        .on('uptodate', function () { // Deprecated in pouchdb 3.3.0
             listener.start();
         })
-        .on('paused', function () { // should be used instead of uptodate, but seems not to be called yet
-            console.log('paused', arguments);
+        .on('paused', function () { // should be used instead of uptodate
+            listener.start();
         });
 });
