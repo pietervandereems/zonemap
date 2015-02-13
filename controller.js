@@ -26,7 +26,7 @@ require(['leaflet'], function (L) {
     });
 
     map = L.map(mapElm, {layers: [zone, osm]}).setView([12.971599, 77.594563], 12);
-    L.control.layers({'Zone': zone, 'Osm': osm}).addTo(map);
+    L.control.layers({'Zone': zone, 'Osm': osm}, null, {position: 'topleft'}).addTo(map);
 
     // ****************** Markers **********************
     updateMarker = function (coor, add) {
@@ -108,7 +108,9 @@ require(['leaflet'], function (L) {
         list += '<label><input type="checkbox" name="coordinates" value="12.998599084931548,77.59188652038574" />Palace</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="13.021868409794724,77.56609439849854" />Institute of Science</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.951363805094765,77.64690399169922" />Detector Range Golf Course</label><br/>';
-        list += '<label><input type="checkbox" name="coordinates" value="mark" />Mark</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.982175440247259,77.58102893829346" />Race Course</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.96745491781277,77.58794903755188" />Memorial Church</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.993769328896438,77.6603364944458" />Susan Calvin Institue</label><br/>';
         list += '<button type="button" data-command="clean">Clean</button>';
         list += '<button type="button" data-command="send">Send</button>';
         this.container.innerHTML = list;
@@ -143,48 +145,4 @@ require(['leaflet'], function (L) {
             updateMarker(ev.target.value, ev.target.checked);
         }
     });
-
-    // ****************** Control **********************
-//    interpretCommand = function (doc) {
-//        if (!doc.command) {
-//            return;
-//        }
-//        switch (doc.command) {
-//        case 'move':
-//            goToLocation(doc);
-//            break;
-//        case 'mark':
-//            multiMarkers.update(doc);
-//            break;
-//        }
-//    };
-//    listener = {
-//        start: function () {
-//            if (listener.status !== 'stopped') {
-//                return;
-//            }
-//            listener.status = 'started';
-//            commandDb.changes({since: 'now', include_docs: true, live: true})
-//                .on('change', function (change) {
-//                    if (listener.status === 'running') {
-//                        console.log('listing, change', change);
-//                        if (change.doc) {
-//                            interpretCommand(change.doc);
-//                        }
-//                    }
-//                })
-//                .on('uptodate', function () {
-//                    listener.status = 'running';
-//                    console.log('listening, uptodate', arguments);
-//                });
-//        },
-//        status: 'stopped'
-//    };
-//    Pouchdb.replicate('https://zone.mekton.nl/db/zone_control', 'commanddb', {live: true})
-//        .on('uptodate', function () { // Should be deprecated in pouchdb, but not yet
-//            listener.start();
-//        })
-//        .on('paused', function () { // should be used instead of uptodate, but seems not to be called yet
-//            console.log('paused', arguments);
-//        });
 });
