@@ -12,10 +12,9 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
         marker,
         multiMarkers,
         MARKERS,
-        commandDb = new Pouchdb('commanddb'),
+//        commandDb = new Pouchdb('commanddb'),
         interpretCommand,
-        listener,
-        LISTENER;
+        listenForCommands = false;
 
     // ****************** Leaflet **********************
     zone = L.tileLayer('https://zone.mekton.nl/tiles/{z}/{x}/{y}.png', {
@@ -135,71 +134,28 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
             break;
         }
     };
-    LISTENER = function () {
-        var status = 'stopped',
-            start;
-
-        start = function () {
-            if (status !== 'stopped') {
-                return;
-            }
-            status = 'started';
-            commandDb.changes({since: 'now', include_docs: true, live: true})
-                .on('change', function (change) {
-                    console.log('listening, change called', arguments);
-                    if (status === 'running') {
-                        console.log('listing, change', change);
-                        if (change.doc) {
-                            interpretCommand(change.doc);
-                        }
-                    }
-                })
-                .on('uptodate', function () {
-                    status = 'running';
-                    console.log('listening, uptodate', arguments);
-                })
-                .on('complete', function () {
-                    console.log('listening, complete', arguments);
-                })
-                .on('create', function () {
-                    console.log('listening, create', arguments);
-                })
-                .on('update', function () {
-                    console.log('listening, update', arguments);
-                })
-                .on('delete', function () {
-                    console.log('listening, delete', arguments);
-                })
-                .on('error', function () {
-                    console.log('listening, error', arguments);
-                });
-        };
-        return {
-            start: start
-        };
-    };
-    listener = new LISTENER();
 
     Pouchdb.replicate('https://zone.mekton.nl/db/zone_control', 'commanddb', {live: true, retry: true})
         .on('uptodate', function () { // Deprecated in pouchdb 3.3.0
-            listener.start();
         })
         .on('paused', function () { // should be used instead of uptodate
-            listener.start();
+            listenForCommands = true;
         })
-        .on('change', function () {
-            console.log('change', arguments);
+        .on('change', function (change) {
+            if (listenForCommands) {
+                if (change.docs) {
+                    interpretCommand(change.docs[0]);
+                }
+            }
         })
         .on('complete', function () {
-            console.log('complete', arguments);
         })
         .on('active', function () {
-            console.log('active', arguments);
         })
         .on('denied', function () {
-            console.log('denied', arguments);
+            console.warn('denied', arguments);
         })
         .on('error', function () {
-            console.log('error', arguments);
+            console.error('error', arguments);
         });
 });
