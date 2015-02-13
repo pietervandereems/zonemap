@@ -160,7 +160,7 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
         };
         return {
             start: start
-        }
+        };
     };
     listener = new LISTENER();
 
