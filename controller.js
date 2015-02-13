@@ -108,6 +108,7 @@ require(['leaflet'], function (L) {
         list += '<label><input type="checkbox" name="coordinates" value="12.998599084931548,77.59188652038574" />Palace</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="13.021868409794724,77.56609439849854" />Institute of Science</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.951363805094765,77.64690399169922" />Detector Range Golf Course</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.84563227058178,77.66544342041016" />Space City</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.982175440247259,77.58102893829346" />Race Course</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.96745491781277,77.58794903755188" />Memorial Church</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.993769328896438,77.6603364944458" />Susan Calvin Institue</label><br/>';
@@ -127,6 +128,7 @@ require(['leaflet'], function (L) {
 
     map.addEventListener('click', function (ev) {
         updateMarker(ev.latlng, true);
+        console.log('location:', ev);
     });
 
     locate.container.addEventListener('click', function (ev) {
