@@ -146,6 +146,7 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
             status = 'started';
             commandDb.changes({since: 'now', include_docs: true, live: true})
                 .on('change', function (change) {
+                    console.log('listening, change called', arguments);
                     if (status === 'running') {
                         console.log('listing, change', change);
                         if (change.doc) {
@@ -156,6 +157,21 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
                 .on('uptodate', function () {
                     status = 'running';
                     console.log('listening, uptodate', arguments);
+                })
+                .on('complete', function () {
+                    console.log('listening, complete', arguments);
+                })
+                .on('create', function () {
+                    console.log('listening, create', arguments);
+                })
+                .on('update', function () {
+                    console.log('listening, update', arguments);
+                })
+                .on('delete', function () {
+                    console.log('listening, delete', arguments);
+                })
+                .on('error', function () {
+                    console.log('listening, error', arguments);
                 });
         };
         return {
@@ -170,5 +186,20 @@ require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
         })
         .on('paused', function () { // should be used instead of uptodate
             listener.start();
+        })
+        .on('change', function () {
+            console.log('change', arguments);
+        })
+        .on('complete', function () {
+            console.log('complete', arguments);
+        })
+        .on('active', function () {
+            console.log('active', arguments);
+        })
+        .on('denied', function () {
+            console.log('denied', arguments);
+        })
+        .on('error', function () {
+            console.log('error', arguments);
         });
 });
