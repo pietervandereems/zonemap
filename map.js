@@ -1,7 +1,7 @@
 /*jslint browser:true, nomen:true*/
 /*globals require*/
 
-require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
+require(['leaflet', 'pouchdb-3.3.0.min'], function (L, Pouchdb) {
     'use strict';
     var mapElm = document.getElementById('map'), // Dom Elements
         map = L.map(mapElm).setView([12.971599, 77.594563], 12), // Leaflet Variables
@@ -156,7 +156,7 @@ require(['leaflet', 'pouchdb-3.2.1.min'], function (L, Pouchdb) {
         },
         status: 'stopped'
     };
-    Pouchdb.replicate('https://zone.mekton.nl/db/zone_control', 'commanddb', {live: true})
+    Pouchdb.replicate('https://zone.mekton.nl/db/zone_control', 'commanddb', {live: true, retry: true})
         .on('uptodate', function () { // Should be deprecated in pouchdb, but not yet
             listener.start();
         })
