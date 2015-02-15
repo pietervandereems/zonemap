@@ -1,7 +1,7 @@
 /*jslint browser:true, nomen:true*/
 /*globals require*/
 
-require(['leaflet', 'pouchdb-3.3.0'], function (L, Pouchdb) {
+require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
     'use strict';
     var mapElm = document.getElementById('map'), // Dom Elements
         map = L.map(mapElm).setView([12.971599, 77.594563], 12), // Leaflet Variables
