@@ -25,7 +25,8 @@ require(['leaflet'], function (L) {
         maxZoom: 18
     });
 
-    map = L.map(mapElm, {layers: [zone, osm]}).setView([12.971599, 77.594563], 12);
+    map = L.map(mapElm, {center: [12.971599, 77.594563], zoom: 12, layers: [zone]});
+
     L.control.layers({'Zone': zone, 'Osm': osm}, null, {position: 'topleft'}).addTo(map);
 
     // ****************** Markers **********************
@@ -68,7 +69,12 @@ require(['leaflet'], function (L) {
         if (markers.length === 0) {
             return;
         }
-        doc.command = 'mark';
+        if (locate.container.querySelector('input[type="text"]').value.length > 0) {
+            doc.command = 'popup';
+            doc.message = locate.container.querySelector('input[type="text"]').value;
+        } else {
+            doc.command = 'mark';
+        }
         doc.location = [];
         Object.keys(markers).forEach(function (marker) {
             var latLng = markers[marker].getLatLng();
@@ -112,6 +118,7 @@ require(['leaflet'], function (L) {
         list += '<label><input type="checkbox" name="coordinates" value="12.982175440247259,77.58102893829346" />Race Course</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.96745491781277,77.58794903755188" />Memorial Church</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.993769328896438,77.6603364944458" />Susan Calvin Institue</label><br/>';
+        list += '<input type="text" placeholder="message" />';
         list += '<button type="button" data-command="clean">Clean</button>';
         list += '<button type="button" data-command="send">Send</button>';
         this.container.innerHTML = list;
