@@ -4,15 +4,16 @@
 require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
     'use strict';
     var mapElm = document.getElementById('map'), // Dom Elements
-        map = L.map(mapElm).setView([12.971599, 77.594563], 12), // Leaflet Variables
-        zone,
-        locate,
-        updateMarker,
-        goToLocation,
-        marker,
-        multiMarkers,
-        MARKERS,
-//        commandDb = new Pouchdb('commanddb'),
+        map = L.map(mapElm).setView([12.971599, 77.594563], 12), // the leaflet map
+        zone,           // The zone tilelayer
+        locate,         // The leaflet location control
+        updateMarker,   // Update the single marker from the leaflet location control
+        goToLocation,   // Mark and zoom to this location
+        marker,         // The single marker from the leaflet location control
+        multiMarkers,   // The (possible) multiple marker(s) recieved from remote
+        MARKERS,        // To store and control the multiple markers recieved from remote
+        POPUPS,         // Store and control the popups recieved from remote
+        popups,         // the popups recieved from remote
         interpretCommand,
         listenForCommands = false;
 
@@ -22,6 +23,8 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
         minZoom: 12,
         maxZoom: 18
     });
+
+    // ** Markers **
     MARKERS = function () {
         var markers = [],
             update,
@@ -61,6 +64,35 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
         }
     };
 
+    // ** Popups **
+    POPUPS = function () {
+        var popupArr = [],
+            display,
+            clean;
+        display = function (doc) {
+            clean();
+            doc.location.forEach(function (loc) {
+                var popup;
+                popup = L.popup();
+                popup.setContent(doc.message);
+                popup.setLatLng([loc.lat, loc.lng]);
+                popup.addTo(map);
+                popupArr.push(popup);
+            });
+        };
+        clean = function () {
+            popupArr.forEach(function (popup) {
+                map.removeLayer(popup);
+            });
+        };
+        return {
+            display: display,
+            clean: clean
+        };
+    };
+    popups = new POPUPS();
+
+    // ** Location **
     goToLocation = function (ev) {
         var coordinates;
         if (ev._id) {
@@ -76,6 +108,8 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
             }
         }
     };
+
+    // ** Leaflet Control **
 
     locate = L.control();
 
@@ -113,6 +147,7 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
         console.log('removed');
     };
 
+    // ** Add it to the map **
     zone.addTo(map);
     locate.addTo(map);
 
@@ -132,6 +167,9 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
             break;
         case 'mark':
             multiMarkers.update(doc);
+            break;
+        case 'popup':
+            popups.display(doc);
             break;
         }
     };
