@@ -137,6 +137,7 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
         list += '<option value="13.021868409794724,77.56609439849854">Institute of Science</option>';
         list += '<option value="12.951363805094765,77.64690399169922">Detector Range Golf Course</option>';
         list += '<option value="12.84563227058178,77.66544342041016">Space City</option>';
+        list += '<option value="12.931245838582779,77.43837833404541">Airsoft Outdoor</option>';
         this.select.innerHTML = list;
 
         this.select.addEventListener('change', goToLocation);

@@ -88,7 +88,18 @@ require(['leaflet'], function (L) {
             'lat': 12.951363805094765,
             'lng': 77.64690399169922,
             'popup': 'Detector Range Golf Course'
+        },
+        {
+            'lat': 12.84563227058178,
+            'lng': 77.66544342041016,
+            'popup': 'Space City'
+        },
+        {
+            'lat': 12.931245838582779,
+            'lng': 77.43837833404541,
+            'popup': 'Airsoft Outdoor'
         }
+
     ];
 
     zone = L.tileLayer('https://zone.mekton.nl/tiles/{z}/{x}/{y}.png', {
