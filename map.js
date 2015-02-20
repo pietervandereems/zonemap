@@ -68,7 +68,7 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
     POPUPS = function () {
         var popupArr = [],
             display,
-            clean;
+            clean,
         display = function (doc) {
             clean();
             doc.location.forEach(function (loc) {
@@ -78,12 +78,12 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
                 popup.setLatLng([loc.lat, loc.lng]);
                 popup.addTo(map);
                 popupArr.push(popup);
-                if (doc.timed) {
-                    setTimeOut(function () {
-                        map.removeLayer(popup);
-                    }, doc.timed * 1000);
-                }
             });
+            if (doc.timed) {
+                setTimeOut(function () {
+                    clean();
+                }, doc.timed * 1000);
+            }
         };
         clean = function () {
             popupArr.forEach(function (popup) {
