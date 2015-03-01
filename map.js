@@ -68,7 +68,7 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
     POPUPS = function () {
         var popupArr = [],
             display,
-            clean;
+            clean,
         display = function (doc) {
             clean();
             doc.location.forEach(function (loc) {
@@ -79,6 +79,11 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
                 popup.addTo(map);
                 popupArr.push(popup);
             });
+            if (doc.timed) {
+                setTimeOut(function () {
+                    clean();
+                }, doc.timed * 1000);
+            }
         };
         clean = function () {
             popupArr.forEach(function (popup) {
@@ -176,8 +181,8 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
     };
 
     Pouchdb.replicate('https://zone.mekton.nl/db/zone_control', 'commanddb', {live: true, retry: true})
-        .on('uptodate', function () { // Deprecated in pouchdb 3.3.0
-        })
+//        .on('uptodate', function () { // Deprecated in pouchdb 3.3.0
+//        })
         .on('paused', function () { // should be used instead of uptodate
             listenForCommands = true;
         })
@@ -188,10 +193,10 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
                 }
             }
         })
-        .on('complete', function () {
-        })
-        .on('active', function () {
-        })
+//        .on('complete', function () {
+//        })
+//        .on('active', function () {
+//        })
         .on('denied', function () {
             console.warn('denied', arguments);
         })

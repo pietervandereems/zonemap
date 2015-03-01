@@ -72,6 +72,9 @@ require(['leaflet'], function (L) {
         if (locate.container.querySelector('input[type="text"]').value.length > 0) {
             doc.command = 'popup';
             doc.message = locate.container.querySelector('input[type="text"]').value;
+            if (document.getElementById('timed').checked) {
+                doc.timed = 5;
+            }
         } else {
             doc.command = 'mark';
         }
@@ -124,7 +127,7 @@ require(['leaflet'], function (L) {
         list += '<label><input type="checkbox" name="coordinates" value="12.970424184248023,77.5850522518158" />Sun, Flare, Spring</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.975139390155867,77.55075216293335" />Police Quarters</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.86420911385245,77.66576528549194" />Sci-Fi fanclub</label><br/>';
-        list += '<input type="text" placeholder="message" />';
+        list += '<input type="checkbox" id="timed" /><input type="text" placeholder="message" /><br/>';
         list += '<button type="button" data-command="clean">Clean</button>';
         list += '<button type="button" data-command="send">Send</button>';
         this.container.innerHTML = list;
