@@ -119,6 +119,11 @@ require(['leaflet'], function (L) {
         list += '<label><input type="checkbox" name="coordinates" value="12.982175440247259,77.58102893829346" />Race Course</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.96745491781277,77.58794903755188" />Memorial Church</label><br/>';
         list += '<label><input type="checkbox" name="coordinates" value="12.993769328896438,77.6603364944458" />Susan Calvin Institue</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="13.102008522781896,77.58639335632324" />Windfall MediTech</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="13.095226675828103,77.59039521217346" />Fortune Microprocessors</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.970424184248023,77.5850522518158" />Sun, Flare, Spring</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.975139390155867,77.55075216293335" />Police Quarters</label><br/>';
+        list += '<label><input type="checkbox" name="coordinates" value="12.86420911385245,77.66576528549194" />Sci-Fi fanclub</label><br/>';
         list += '<input type="text" placeholder="message" />';
         list += '<button type="button" data-command="clean">Clean</button>';
         list += '<button type="button" data-command="send">Send</button>';
