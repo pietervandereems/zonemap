@@ -68,8 +68,9 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
     POPUPS = function () {
         var popupArr = [],
             display,
-            clean,
+            clean;
         display = function (doc) {
+            console.log('popup', doc);
             clean();
             doc.location.forEach(function (loc) {
                 var popup;
@@ -80,9 +81,9 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
                 popupArr.push(popup);
             });
             if (doc.timed) {
-                setTimeOut(function () {
+                window.setTimeout(function () {
                     clean();
-                }, doc.timed * 1000);
+                }, doc.timed * 500);
             }
         };
         clean = function () {
