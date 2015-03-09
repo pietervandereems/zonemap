@@ -119,10 +119,11 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
     displayImage = function (doc) {
         var tabs = document.querySelectorAll('[data-tab]');
         Object.keys(tabs).forEach(function (tab) {
-            var elm = tabs[tab];
+            var elm = tabs[tab],
+                image = doc._attachments[Object.keys(doc._attachments)[0]];
             if (elm.dataset.tab === 'image') {
                 elm.classList.remove('invisible');
-                console.log('att', doc._attachments);
+                elm.querySelector('img').src = 'data:' + image.content_type + ';' + image.data;
             } else {
                 elm.classList.add('invisble');
             }
