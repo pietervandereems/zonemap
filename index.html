@@ -17,10 +17,19 @@
         .leaflet-control-attribution {
             display: none;
         }
+        .invisible {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
-        <div id="map"></div>
+        <div id="map" data-tab="map" ></div>
+        <div data-tab="image" class="invisible"></div>
     <script src="require.min.js" data-main="map.js"></script>
 </body>
 </html>

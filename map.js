@@ -9,6 +9,7 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
         locate,         // The leaflet location control
         updateMarker,   // Update the single marker from the leaflet location control
         goToLocation,   // Mark and zoom to this location
+        displayImage,   // Display an image fullscreen (instead of map)
         marker,         // The single marker from the leaflet location control
         multiMarkers,   // The (possible) multiple marker(s) recieved from remote
         MARKERS,        // To store and control the multiple markers recieved from remote
@@ -115,6 +116,19 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
         }
     };
 
+    displayImage = function (doc) {
+        var tabs = document.querySelectorAll('[data-tab]');
+        Object.keys(tabs).forEach(function (tab) {
+            var elm = tabs[tab];
+            if (elm.dataset.tab === 'image') {
+                elm.classList.remove('invisible');
+                console.log('att', doc._attachments);
+            } else {
+                elm.classList.add('invisble');
+            }
+        });
+    };
+
     // ** Leaflet Control **
 
     locate = L.control();
@@ -177,6 +191,9 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
             break;
         case 'popup':
             popups.display(doc);
+            break;
+        case 'image':
+            displayImage(doc);
             break;
         }
     };
