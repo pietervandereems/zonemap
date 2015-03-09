@@ -125,7 +125,7 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
                 elm.classList.remove('invisible');
                 elm.querySelector('img').src = 'data:' + image.content_type + ';base64,' + image.data;
             } else {
-                elm.classList.add('invisble');
+                elm.classList.add('invisible');
             }
         });
     };
