@@ -64,6 +64,12 @@ require(['leaflet'], function (L) {
             'lng': 77.63958692550659,
             'popup': 'Asimov R&D Grounds'
         },
+        list += '<option value="12.99477292229971, 77.6487922668457">Shinobu Industries</option>';
+        {
+            'lat': 12.99477292229971,
+            'lng': 77.6487922668457,
+            'popup': 'Shinobu Industries'
+        },
         {
             'lat': 13.071322,
             'lng': 77.580199,

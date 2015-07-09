@@ -152,6 +152,7 @@ require(['leaflet', 'pouchdb-3.3.1.min'], function (L, Pouchdb) {
         list += '<option value="12.826363620592424,77.5411605834961">Von Braun Park</option>';
         list += '<option value="12.88510641838721,77.52644062042236">Dyson Memorial Park</option>';
         list += '<option value="12.9977627702671,77.63958692550659">Asimov R&D Grounds</option>';
+        list += '<option value="12.99477292229971, 77.6487922668457">Shinobu Industries</option>';
         list += '<option value="13.071322,77.580199">Geology Department</option>';
         list += '<option value="12.945651,77.508995">Geology Department</option>';
         list += '<option value="12.998599084931548,77.59188652038574">Palace</option>';
